@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md text-center">
+        <h1 class="text-2xl font-bold mb-4 text-blue-600"><i class="fa-solid fa-database"></i> ดึงข้อมูลจาก GAS</h1>
+        <button id="loadBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+            โหลดข้อมูล
+        </button>
+        <div id="result" class="mt-4 text-gray-700"></div>
+    </div>
+
+    <script>
+        document.getElementById('loadBtn').addEventListener('click', function() {
+            // ใส่ Web App URL ของ Google Script ที่นี่
+            const gasUrl = 'วาง_URL_ของ_GAS_ที่นี่'; 
+
+            // แสดง SweetAlert ระหว่างโหลด
+            Swal.fire({
+                title: 'กำลังโหลด...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
+
+            fetch(gasUrl)
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+                    if(data.status === "success") {
+                        document.getElementById('result').innerText = data.message;
+                        Swal.fire('สำเร็จ!', 'ดึงข้อมูลเรียบร้อยแล้ว', 'success');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลได้', 'error');
+                });
+        });
+    </script>
+</body>
+</html>
