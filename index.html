@@ -3,46 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบของฉัน</title>
+    <title>PK System & Service - ระบบลงทะเบียน</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md text-center">
-        <h1 class="text-2xl font-bold mb-4 text-blue-600"><i class="fa-solid fa-database"></i> ดึงข้อมูลจาก GAS</h1>
-        <button id="loadBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
-            โหลดข้อมูล
-        </button>
-        <div id="result" class="mt-4 text-gray-700"></div>
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-blue-600 p-6 text-center">
+            <h1 class="text-2xl font-bold text-white"><i class="fa-solid fa-clipboard-user mr-2"></i> ระบบลงทะเบียน</h1>
+            <p class="text-blue-100 mt-2 text-sm">บริการบันทึกข้อมูลเข้าสู่ระบบส่วนกลาง</p>
+        </div>
+
+        <form id="regForm" class="p-6 space-y-4">
+            <div>
+                <label class="block text-gray-700 text-sm font-semibold mb-2">รหัสนักศึกษา</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fa-solid fa-id-card"></i></span>
+                    <input type="text" name="studentId" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="ระบุรหัสนักศึกษา">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-semibold mb-2">ชื่อ - นามสกุล</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fa-solid fa-user"></i></span>
+                    <input type="text" name="name" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="นาย / นางสาว">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-semibold mb-2">สังกัด / ภาควิชา</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400"><i class="fa-solid fa-building-columns"></i></span>
+                    <select name="department" required class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none bg-white">
+                        <option value="" disabled selected>เลือกภาควิชา...</option>
+                        <option value="วิศวกรรมคอมพิวเตอร์">วิศวกรรมคอมพิวเตอร์</option>
+                        <option value="วิศวกรรมเครื่องกล">วิศวกรรมเครื่องกล</option>
+                        <option value="วิศวกรรมอุตสาหการ">วิศวกรรมอุตสาหการ</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition duration-300 shadow-md flex justify-center items-center">
+                <i class="fa-solid fa-paper-plane mr-2"></i> บันทึกข้อมูล
+            </button>
+        </form>
     </div>
 
     <script>
-        document.getElementById('loadBtn').addEventListener('click', function() {
-            // ใส่ Web App URL ของ Google Script ที่นี่
-            const gasUrl = 'วาง_URL_ของ_GAS_ที่นี่'; 
+        // ----------------------------------------------------
+        // นำ Web App URL ของ Google Script มาใส่ในเครื่องหมายคำพูดด้านล่าง
+        const scriptUrl = 'วาง_URL_WEB_APP_ตรงนี้';
+        // ----------------------------------------------------
 
-            // แสดง SweetAlert ระหว่างโหลด
+        const form = document.getElementById('regForm');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault(); // ป้องกันการรีเฟรชหน้าเว็บ
+
+            // เด้งแจ้งเตือนระหว่างโหลด
             Swal.fire({
-                title: 'กำลังโหลด...',
+                title: 'กำลังบันทึกข้อมูล...',
+                html: 'กรุณารอสักครู่',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading() }
             });
 
-            fetch(gasUrl)
-                .then(response => response.json())
-                .then(data => {
-                    Swal.close();
-                    if(data.status === "success") {
-                        document.getElementById('result').innerText = data.message;
-                        Swal.fire('สำเร็จ!', 'ดึงข้อมูลเรียบร้อยแล้ว', 'success');
-                    }
-                })
-                .catch(error => {
-                    Swal.close();
-                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลได้', 'error');
+            // แปลงข้อมูลฟอร์มให้ส่งผ่าน fetch API ได้
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สำเร็จ!',
+                        text: 'บันทึกข้อมูลลงตารางเรียบร้อยแล้ว',
+                        confirmButtonColor: '#2563eb'
+                    });
+                    form.reset(); // ล้างข้อมูลในช่องกรอก
+                } else {
+                    throw new Error(result.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+                    confirmButtonColor: '#ef4444'
                 });
+                console.error('Error!', error.message);
+            });
         });
     </script>
 </body>
